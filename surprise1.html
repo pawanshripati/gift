@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Happy Birthday love</title>
+  <meta charset="UTF-8" />
+  <meta name="description" content="Happy Birthday Savita">
+  <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+  <meta property="og:description" content="Wish you a very Happy Birthday">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css">
+  <link href="https://afeld.github.io/emoji-css/emoji.css" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Josefin+Sans:100,300' rel='stylesheet'>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #131313 url('./heart-collage-i-love-you.jpg') center center no-repeat;
+      background-size: 940px 970px;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: brightness(1.8);
+      font-family: 'Josefin Sans', sans-serif;
+    }
+
+    .cover {
+      background: rgba(0, 0, 0, 0.82);
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .overlay-static {
+      position: relative;
+      z-index: 50;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .bday {
+      font-size: 24px;
+      color: #fff;
+      font-weight: 300;
+      text-align: center;
+      z-index: 20;
+      margin-bottom: 30px;
+    }
+
+    .gift-button {
+      background-color: #242121;
+      color: rgb(85, 79, 79);
+      padding: 12px 25px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .gift-button:hover {
+      background-color: #555;
+      transform: scale(1.05);
+    }
+
+    canvas#can {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    #surpriseBtn {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 14px 30px;
+      font-size: 20px;
+      background-color: #242121;
+      color: rgba(92, 87, 87, 0.37);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      z-index: 1001;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    #surpriseBtn:disabled {
+      background-color: rgb(65, 56, 56);
+      cursor: not-allowed;
+    }
+
+    audio {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <audio id="hbd" loop>
+    <source src="./hbd1.mp3" type="audio/mpeg">
+    Your browser isn't invited for super fun audio time.
+  </audio>
+
+  <button id="surpriseBtn" onclick="playSurprise()">Click to hear favourite song</button>
+
+  <div class="cover">
+    <canvas id="can"></canvas>
+    <div class="overlay-static">
+      <h1 class="bday">
+        oye pandi terko mai yeh ring virtual hi dee rha hou <br>
+        physically nhi achaa chod baby this ring is for you <br>
+        this ring not only contain diamonds and silver yeh ring mai apne<br>
+        bhaut saare memories hai i don't know tere liye yeh ring special hoga ya <br>
+        par mere liye toh bhaut hai hamesha phene rakh gussa mai rhe ya <br>
+        kaise bhi rhe par don't remove it <br>
+        ❤️I love you baby❤️
+      </h1>
+      <a href="https://skfb.ly/pyMwO" target="_blank" class="gift-button">
+        ❤️ Click here to get a gift ❤️
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const TwoPI = Math.PI * 2;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const center_x = w / 2;
+    const center_y = h / 2;
+    const colors = ['#FF0000', '#E8D45B', '#8CFF00','#3F33FF','#FF3349','#33FFC7'];
+    const max_distance = Math.abs(Math.max(center_x, center_y));
+    const min_distance = Math.abs(Math.min(center_x, center_y));
+    const canvas = document.getElementById('can');
+    const ctx = canvas.getContext('2d');
+    canvas.width = w;
+    canvas.height = h;
+
+    function Firefly() {
+      const angle = Math.random() * TwoPI;
+      this.x = center_x + Math.sin(angle) * (Math.random() * (max_distance - min_distance) + min_distance);
+      this.y = center_y + Math.cos(angle) * (Math.random() * (max_distance - min_distance) + min_distance);
+      this.angle = Math.atan2(this.y - center_y, this.x - center_x);
+      this.vel = Math.random() * 50 + 20;
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+      this.xvel = this.vel * Math.cos(this.angle);
+      this.yvel = this.vel * Math.sin(this.angle);
+      this.size = 2 + Math.random() * 2;
+      this.phase = Math.random() * TwoPI;
+    }
+
+    Firefly.prototype.move = function(dt) {
+      if (isOnHeart(this.x, this.y)) {
+        this.size -= 0.001;
+        return;
+      }
+      this.x += this.xvel * dt;
+      this.y += this.yvel * dt;
+    };
+
+    Firefly.prototype.render = function(ctx, now) {
+      if (this.size < 1) return;
+      ctx.globalAlpha = Math.max(Math.abs(Math.sin((now + this.phase) / (~~(this.size * 100)))), 0.4);
+      ctx.fillStyle = this.color;
+      ctx.shadowColor = this.color;
+      ctx.shadowBlur = 20 / this.size;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, TwoPI, false);
+      ctx.closePath();
+      ctx.fill();
+    };
+
+    let fireflies = [];
+    let last = Date.now();
+    let dt = 0, now = 0;
+    let alive = 0, last_emit = 0;
+    const max_fireflies = 500;
+
+    function render() {
+      now = Date.now();
+      dt = (last - now) / 1000;
+      last = now;
+      ctx.clearRect(0, 0, w, h);
+      fireflies.forEach(f => {
+        f.move(dt);
+        f.render(ctx, now);
+      });
+      fireflies = fireflies.filter(f => f.size > 1);
+      alive = fireflies.length;
+      if (alive < max_fireflies && last_emit - now < -100) {
+        fireflies.push(new Firefly());
+        last_emit = now;
+      }
+      requestAnimationFrame(render);
+    }
+
+    render();
+
+    function isOnHeart(x, y) {
+      x = ((x - center_x) / (min_distance * 1.2)) * 1.8;
+      y = ((y - center_y) / (min_distance)) * -1.8;
+      const x2 = x * x, y2 = y * y;
+      return (Math.pow((x2 + y2 - 1), 3) - (x2 * y2 * y) <= 0);
+    }
+
+    function playSurprise() {
+      const audio = document.getElementById("hbd");
+      const btn = document.getElementById("surpriseBtn");
+      audio.play();
+      btn.innerText = "🎶 Now Playing";
+      btn.disabled = true;
+    }
+  </script>
+</body>
+</html>
